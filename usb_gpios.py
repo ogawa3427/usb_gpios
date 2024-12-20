@@ -1,6 +1,6 @@
 import dataclasses
 from enum import Enum, auto
-from pyserial import Serial
+from serial import Serial
 
 class M5:
     class Boards(Enum):
@@ -59,15 +59,10 @@ class M5:
         },
         Boards.M5_ATOM_S3_LITE: {
             0: 'fugafuga',
-            1: PinFeature(1, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG, Peripheral.UART], Peripheral.NONE, False),
-            2: PinFeature(2, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG, Peripheral.UART], Peripheral.NONE, False),
-            4: PinFeature(4, [Peripheral.DIGITAL, Peripheral.ANALOG], Peripheral.NONE, False),
-            5: PinFeature(5, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG], Peripheral.NONE, False),
-            6: PinFeature(6, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG], Peripheral.NONE, False),
-            7: PinFeature(7, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG], Peripheral.NONE, False),
-            8: PinFeature(8, [Peripheral.ADC, Peripheral.TOUCH, Peripheral.DIGITAL, Peripheral.ANALOG], Peripheral.NONE, False),
-            38: PinFeature(7, [Peripheral.DIGITAL, Peripheral.ANALOG, Peripheral.I2C_SCL], Peripheral.NONE, False),
-            39: PinFeature(8, [Peripheral.DIGITAL, Peripheral.ANALOG, Peripheral.I2C_SDA], Peripheral.NONE, False),
+            1: PinFeature(1, [Peripheral.DIGITAL_OUTPUT, Peripheral.DIGITAL_INPUT_PULLUP, Peripheral.DIGITAL_INPUT_PULLDOWN, Peripheral.ANALOG_INPUT, Peripheral.ANALOG_OUTPUT, Peripheral.I2C_SCL], Peripheral.NONE, False),
+            2: PinFeature(2, [Peripheral.DIGITAL_OUTPUT, Peripheral.DIGITAL_INPUT_PULLUP, Peripheral.DIGITAL_INPUT_PULLDOWN, Peripheral.ANALOG_INPUT, Peripheral.ANALOG_OUTPUT, Peripheral.I2C_SDA], Peripheral.NONE, False),
+            4: PinFeature(4, [Peripheral.DIGITAL_OUTPUT, Peripheral.DIGITAL_INPUT_PULLUP, Peripheral.DIGITAL_INPUT_PULLDOWN, Peripheral.ANALOG_INPUT, Peripheral.ANALOG_OUTPUT, Peripheral.I2C_SCL], Peripheral.NONE, False),
+            5: PinFeature(5, [Peripheral.DIGITAL_OUTPUT, Peripheral.DIGITAL_INPUT_PULLUP, Peripheral.DIGITAL_INPUT_PULLDOWN, Peripheral.ANALOG_INPUT, Peripheral.ANALOG_OUTPUT, Peripheral.I2C_SDA], Peripheral.NONE, False),
         }
     }
 
