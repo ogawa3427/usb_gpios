@@ -1,6 +1,6 @@
 from serial import Serial
 import usb_gpios
-
+import time
 # 開発環境かどうかのフラグ（環境変数などで管理することを推奨）
 DEV_MODE = True
 
@@ -24,4 +24,16 @@ else:
 
 m5atoms3 = usb_gpios.M5(usb_gpios.M5.Boards.M5_ATOMS3, ser)
 
-m5atoms3.digitalWrite(1, 1)
+def _setup():
+    m5atoms3.pinMode(1, usb_gpios.M5.Peripheral.DIGITAL_OUTPUT)
+
+def _loop():
+    m5atoms3.digitalWrite(1, usb_gpios.HIGH)
+    time.sleep(0.5)
+    m5atoms3.digitalWrite(1, usb_gpios.LOW)
+    time.sleep(0.5)
+
+if __name__ == "__main__":
+    _setup()
+    while True:
+        _loop()
