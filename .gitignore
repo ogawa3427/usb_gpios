@@ -5,3 +5,4 @@
 .vscode/ipch
 
 src/env.h
+__pycache__/usb_gpios.cpython-313.pyc
