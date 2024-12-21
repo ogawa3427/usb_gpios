@@ -1,14 +1,22 @@
+#include <M5Unified.h>
 #include "env.h"
 
 void setup() {
-  Serial.begin(115200);
+  USBSerial.begin(115200);
+  auto cfg = M5.config();
+  M5.begin(cfg);
+  M5.Lcd.setTextSize(4);
+  M5.Lcd.setFont(&fonts::Font2);
 }
 
 void loop() {
-  String inputString = "";
-  while (Serial.available()) {
-    inputString += (char)Serial.read();
+  if (USBSerial.available()) {
+    String receivedString = USBSerial.readStringUntil('\n');
+    uint8_t receivedByte = receivedString.toInt();
+    // USBSerial.println(receivedByte);
+    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.printf("%02X", receivedByte);
   }
-  Serial.println(inputString);
 }
 
