@@ -17,18 +17,18 @@ class M5:
         INPUT_PULLDOWN = auto()
 
     class Peripheral(Enum):
-        DIGITAL_INPUT_PULLUP = auto()
+        DIGITAL_INPUT_PULLUP = auto()  
         DIGITAL_INPUT_PULLDOWN = auto()
-        DIGITAL_OUTPUT = auto()
-        ANALOG_INPUT = auto()
-        ANALOG_OUTPUT = auto()
-        I2C_SCL = auto()
-        I2C_SDA = auto()
-        SPI = auto()
-        UART = auto()
-        ADC = auto()
-        DAC = auto()
-        TOUCH = auto()
+        DIGITAL_OUTPUT = auto()       
+        ANALOG_INPUT = auto()         
+        ANALOG_OUTPUT = auto()        
+        I2C_SCL = auto()              
+        I2C_SDA = auto()              
+        SPI = auto()                  
+        UART = auto()                 
+        ADC = auto()                  
+        DAC = auto()                  
+        TOUCH = auto()                
         NONE = auto()
 
     @dataclasses.dataclass
@@ -76,7 +76,8 @@ class M5:
     def pinMode(self, pin: int, mode: PinMode):
         if pin in self.pinBank and self.pinBank[pin].state_used_for == self.Peripheral.NONE and mode in self.pinBank[pin].peripherals_can_use:
             self.pinBank[pin].state_used_for = mode
-            self.send_command(0b00000001)
+            self.send_command(str(0x1200 + pin).encode() + b'\n')
+            print(hex(0x1200 + pin).encode() + b'\n', flush=True)
             return True
         elif pin not in self.pinBank:
             raise ValueError(f"Invalid pin number: {pin}")
@@ -88,8 +89,8 @@ class M5:
 
     def digitalWrite(self, pin: int, value: int):
         if pin in self.pinBank and self.pinBank[pin].state_used_for == self.Peripheral.DIGITAL_OUTPUT:
-            self.send_command(str(0x1100 + value + pin).encode() + b'\n')
-            print(hex(0x1100 + value + pin).encode() + b'\n', flush=True)
+            self.send_command(str(0x1100 + value*16 + pin).encode() + b'\n')
+            print(hex(0x1100 + value*16 + pin).encode() + b'\n', flush=True)
             return True
         elif pin not in self.pinBank:
             raise ValueError(f"Invalid pin number: {pin}")

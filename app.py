@@ -31,12 +31,15 @@ m5atoms3 = usb_gpios.M5(usb_gpios.M5.Boards.M5_ATOMS3, ser)
 
 def _setup():
     m5atoms3.pinMode(8, usb_gpios.M5.Peripheral.DIGITAL_OUTPUT)
+    time.sleep(0.1)
+    
+sleepDelay = 1
 
 def _loop():
     m5atoms3.digitalWrite(8, usb_gpios.M5.HIGH)
-    time.sleep(0.5)
+    time.sleep(sleepDelay)
     m5atoms3.digitalWrite(8, usb_gpios.M5.LOW)
-    time.sleep(0.5)
+    time.sleep(sleepDelay)
 
 if __name__ == "__main__":
     _setup()
