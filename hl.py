@@ -8,20 +8,18 @@ import psutil
 import threading
 
 class CodeChangeHandler(FileSystemEventHandler):
-    def __init__(self, file_path):
-        self.file_path = os.path.abspath(file_path)
+    def __init__(self, file_paths):
+        self.file_paths = [os.path.abspath(path) for path in file_paths]
         self.last_run = 0
-        self.cooldown = 0.5  # クールダウン時間を0.5秒に短縮
+        self.cooldown = 0.5
         self.current_process = None
         self.exeC_file = None
 
     def on_modified(self, event):
-        # イベントがFileModifiedEventであることを確認
         if not isinstance(event, FileModifiedEvent):
             return
 
-        # パスが監視対象のファイルと一致するか確認
-        if os.path.abspath(event.src_path) != self.file_path:
+        if os.path.abspath(event.src_path) not in self.file_paths:
             return
 
         current_time = time.time()
@@ -31,9 +29,8 @@ class CodeChangeHandler(FileSystemEventHandler):
 
     def restart_program(self, exeC_file):
         print("\n" + "="*50)
-        print(f"変更を検知: {self.file_path}")
+        print(f"変更を検知: {', '.join(self.file_paths)}")
         
-        # 既存のプロセスを終了
         if self.current_process:
             try:
                 process = psutil.Process(self.current_process.pid)
@@ -46,17 +43,15 @@ class CodeChangeHandler(FileSystemEventHandler):
         print("プログラムを再実行します...")
         print("="*50 + "\n")
 
-        # 新しいプロセスを開始
         try:
             self.current_process = subprocess.Popen(
                 [sys.executable, exeC_file],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
-                bufsize=1  # ラインバッファリングを設定
+                bufsize=1
             )
             
-            # 出力監視用の関数
             def monitor_output(pipe, is_error=False):
                 for line in pipe:
                     if is_error:
@@ -64,7 +59,6 @@ class CodeChangeHandler(FileSystemEventHandler):
                     else:
                         print(line.strip(), flush=True)
 
-            # 標準出力と標準エラー出力を別々のスレッドで監視
             stdout_thread = threading.Thread(
                 target=monitor_output, 
                 args=(self.current_process.stdout,),
@@ -82,20 +76,19 @@ class CodeChangeHandler(FileSystemEventHandler):
         except Exception as e:
             print(f"実行エラー: {e}")
 
-def watch_file(file_path, exeC_file):
-    event_handler = CodeChangeHandler(file_path)
+def watch_file(file_paths, exeC_file):
+    event_handler = CodeChangeHandler(file_paths)
     event_handler.exeC_file = exeC_file
     observer = Observer()
     
-    # ファイルの親ディレクトリを監視
-    directory = os.path.dirname(os.path.abspath(file_path))
-    observer.schedule(event_handler, directory, recursive=False)
+    watched_dirs = set(os.path.dirname(os.path.abspath(path)) for path in file_paths)
+    for directory in watched_dirs:
+        observer.schedule(event_handler, directory, recursive=False)
     observer.start()
 
-    # 初回実行
     event_handler.restart_program(exeC_file)
 
-    print(f"ファイル監視を開始: {file_path}")
+    print(f"ファイル監視を開始: {', '.join(file_paths)}")
     print("終了するには Ctrl+C を押してください...")
 
     try:
@@ -116,18 +109,16 @@ def watch_file(file_path, exeC_file):
     observer.join()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("使用方法: python hot_reloader.py <視対象のPythonァイル> <実行ファイル>")
+    if len(sys.argv) < 3:
+        print("使用方法: python hot_reloader.py <監視対象のPythonファイル1> [<監視対象のPythonファイル2> ...] <実行ファイル>")
         sys.exit(1)
 
-    target_file = sys.argv[1]
-    exeC_file = sys.argv[2]
-    if not os.path.exists(target_file):
-        print(f"エラー: ファイル '{target_file}' が見つかりません")
-        sys.exit(1)
-   
-    if not os.path.exists(exeC_file):
-        print(f"エラー: ファイル '{exeC_file}' が見つかりません")
-        sys.exit(1)
+    target_files = sys.argv[1:-1]
+    exeC_file = sys.argv[-1]
 
-    watch_file(target_file, exeC_file)
+    for file_path in target_files + [exeC_file]:
+        if not os.path.exists(file_path):
+            print(f"エラー: ファイル '{file_path}' が見つかりません")
+            sys.exit(1)
+
+    watch_file(target_files, exeC_file)

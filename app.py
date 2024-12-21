@@ -20,7 +20,12 @@ if DEV_MODE:
     ser = DummySerial(port='COM3', baudrate=115200)
 else:
     # 本番用の実際のシリアル接続
-    ser = serial.Serial(port='COM8', baudrate=115200)
+    ser = serial.Serial(
+        port='COM8',
+        baudrate=115200,
+        timeout=1,
+        write_timeout=1
+    )
 
 m5atoms3 = usb_gpios.M5(usb_gpios.M5.Boards.M5_ATOMS3, ser)
 

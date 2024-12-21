@@ -88,8 +88,8 @@ class M5:
 
     def digitalWrite(self, pin: int, value: int):
         if pin in self.pinBank and self.pinBank[pin].state_used_for == self.Peripheral.DIGITAL_OUTPUT:
-            self.send_command(str(0b10000000 + value).encode() + str(0b11111111).encode() + b'\n')
-            print(str(0b10000000 + value).encode() + str(0b11111111).encode() + b'\n', flush=True)
+            self.send_command(str(0x1100 + value + pin).encode() + b'\n')
+            print(hex(0x1100 + value + pin).encode() + b'\n', flush=True)
             return True
         elif pin not in self.pinBank:
             raise ValueError(f"Invalid pin number: {pin}")

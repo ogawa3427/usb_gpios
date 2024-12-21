@@ -12,11 +12,11 @@ void setup() {
 void loop() {
   if (USBSerial.available()) {
     String receivedString = USBSerial.readStringUntil('\n');
-    uint8_t receivedByte = receivedString.toInt();
+    // uint8_t receivedByte = receivedString.toInt();
     // USBSerial.println(receivedByte);
     M5.Lcd.setCursor(0, 0);
     M5.Lcd.fillScreen(BLACK);
-    M5.Lcd.printf("%02X", receivedByte);
+    M5.Lcd.printf("%02X", receivedString.toInt());
 
     
     
